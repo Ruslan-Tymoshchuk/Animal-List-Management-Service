@@ -2,6 +2,7 @@ package com.system.vetcare.service.impl;
 
 import static java.lang.System.*;
 import static com.system.vetcare.service.constants.JwtClaimKeys.*;
+import java.time.Duration;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,9 +19,9 @@ public class JwtTokenGeneratorImpl implements JwtTokenGenerator {
     @Value("${jwt.issuer}")
     private String jwtIssuer;
     @Value("${access.token.life.time}")
-    private Integer accessTokenLifeTime;
+    private Duration accessTokenLifeTime;
     @Value("${refresh.token.life.time}")
-    private Integer refreshTokenLifeTime; 
+    private Duration refreshTokenLifeTime; 
     
     private final SecretKey accessTokenSecretKey;
     private final SecretKey refreshTokenSecretKey;
@@ -34,7 +35,7 @@ public class JwtTokenGeneratorImpl implements JwtTokenGenerator {
                  .claim(TOKEN_TYPE_CLAIM, ACCESS_TOKEN_TYPE)
                  .claim(AUTHORITIES_CLAIM, authorityNames)
                  .issuedAt(new Date(currentTimeMillis()))
-                 .expiration(new Date(currentTimeMillis() + accessTokenLifeTime))
+                 .expiration(new Date(currentTimeMillis() + accessTokenLifeTime.toMillis()))
                  .signWith(accessTokenSecretKey)
                  .compact();
     }
@@ -47,7 +48,7 @@ public class JwtTokenGeneratorImpl implements JwtTokenGenerator {
                  .subject(userEmail)
                  .claim(TOKEN_TYPE_CLAIM, REFRESH_TOKEN_TYPE)
                  .issuedAt(new Date(currentTimeMillis()))
-                 .expiration(new Date(currentTimeMillis() + refreshTokenLifeTime))
+                 .expiration(new Date(currentTimeMillis() + refreshTokenLifeTime.toMillis()))
                  .signWith(refreshTokenSecretKey)
                  .compact();
     }
