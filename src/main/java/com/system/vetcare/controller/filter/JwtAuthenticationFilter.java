@@ -42,7 +42,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain) throws ServletException, IOException {
         try {
             final SecurityContext securityContext = SecurityContextHolder.getContext();
-            if (!shouldNotFilter(request) && isNull(securityContext.getAuthentication())) {
+            if (isNull(securityContext.getAuthentication())) {
                 final String jwtAccessToken = jwtCookiesService.extractJwtToken(request.getCookies(), ACCESS_TOKEN);
                 final WebAuthenticationDetails webAuthenticationDetails = new WebAuthenticationDetailsSource()
                         .buildDetails(request);

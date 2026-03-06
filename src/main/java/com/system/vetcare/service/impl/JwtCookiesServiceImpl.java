@@ -2,6 +2,7 @@ package com.system.vetcare.service.impl;
 
 import static com.system.vetcare.payload.JwtMarkers.*;
 import static com.system.vetcare.controller.constants.AuthenticationUrl.*;
+import static  java.time.Duration.ZERO;
 import static java.lang.String.format;
 import static java.net.URLDecoder.decode;
 import static java.net.URLEncoder.encode;
@@ -9,6 +10,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.springframework.http.HttpHeaders.SET_COOKIE;
 import static org.springframework.util.StringUtils.startsWithIgnoreCase;
 import static java.util.Objects.nonNull;
+import java.time.Duration;
 import javax.servlet.http.Cookie;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -31,7 +33,7 @@ public class JwtCookiesServiceImpl implements JwtCookiesService {
     public static final String JWT_COOKIE_NOT_FOUND = "JWT token cookie with [name %s] was not found";
 
     @Value("${jwt.cookie.life.time}")
-    private Integer jwtCookieLifeTime;
+    private Duration jwtCookieLifeTime;
 
     @Override
     public HttpHeaders issueJwtCookies(JwtAuthenticationToken authenticationToken) {
@@ -51,8 +53,8 @@ public class JwtCookiesServiceImpl implements JwtCookiesService {
     @Override
     public HttpHeaders revokeJwtCookies() {
         final HttpHeaders headers = new HttpHeaders();
-        headers.add(SET_COOKIE, buildCookie(ACCESS_TOKEN, EMPTY_STRING, ABSOLUTE_API_PATH, 0));
-        headers.add(SET_COOKIE, buildCookie(REFRESH_TOKEN, EMPTY_STRING, SECURITY_API_PATH, 0));
+        headers.add(SET_COOKIE, buildCookie(ACCESS_TOKEN, EMPTY_STRING, ABSOLUTE_API_PATH, ZERO));
+        headers.add(SET_COOKIE, buildCookie(REFRESH_TOKEN, EMPTY_STRING, SECURITY_API_PATH, ZERO));
         return headers;
     }
 
@@ -72,7 +74,7 @@ public class JwtCookiesServiceImpl implements JwtCookiesService {
         }
     }
 
-    private String buildCookie(String name, String value, String path, Integer lifeTime) {
+    private String buildCookie(String name, String value, String path, Duration lifeTime) {
         return ResponseCookie
                  .from(name, encode(value, UTF_8))
                  .httpOnly(true)
