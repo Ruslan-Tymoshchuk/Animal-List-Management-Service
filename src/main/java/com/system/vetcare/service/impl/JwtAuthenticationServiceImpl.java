@@ -1,10 +1,9 @@
 package com.system.vetcare.service.impl;
 
-import java.util.Set;
 import org.springframework.stereotype.Service;
+import com.system.vetcare.domain.UserPrincipal;
 import com.system.vetcare.domain.JwtAuthenticationToken;
 import com.system.vetcare.domain.User;
-import com.system.vetcare.service.AuthorityService;
 import com.system.vetcare.service.JwtAuthenticationService;
 import com.system.vetcare.service.JwtClaimsExtractor;
 import com.system.vetcare.service.JwtTokenBlacklistService;
@@ -21,16 +20,14 @@ public class JwtAuthenticationServiceImpl implements JwtAuthenticationService {
     public static final String JWT_REFRESH_TOKEN_ALREADY_REVOKED = "JWT refresh token has already been revoked";
     
     private final JwtTokenGenerator jwtTokenGenerator;
-    private final AuthorityService authorityService;
     private final JwtTokenBlacklistService jwtTokenBlacklistService;
     private final JwtClaimsExtractor jwtClaimsExtractor;
     private final UserService userService;
     
     @Override
-    public JwtAuthenticationToken issueAuthenticationToken(User user) {
-        final String email = user.getEmail();
-        final Set<String> authorityNames = authorityService.toAuthorityNames(user.getAuthorities());
-        final String accessToken = jwtTokenGenerator.generateAccessToken(email, authorityNames);
+    public JwtAuthenticationToken issueAuthenticationToken(UserPrincipal authenticatedPrincipal) {
+        final String email = authenticatedPrincipal.email();
+        final String accessToken = jwtTokenGenerator.generateAccessToken(email, authenticatedPrincipal.authorityNames());
         final String refreshToken = jwtTokenGenerator.generateRefreshToken(email);
         return new JwtAuthenticationToken(accessToken, refreshToken);
     }
@@ -42,7 +39,7 @@ public class JwtAuthenticationServiceImpl implements JwtAuthenticationService {
             jwtTokenBlacklistService.addTokenToBlacklist(jwtRefreshToken);
             final String email = jwtClaimsExtractor.extractEmail(claims);
             final User user = userService.loadUserByUsername(email);
-            return issueAuthenticationToken(user);
+            return issueAuthenticationToken(new UserPrincipal(user));
         } else {
             throw new JwtException(JWT_REFRESH_TOKEN_ALREADY_REVOKED);
         }

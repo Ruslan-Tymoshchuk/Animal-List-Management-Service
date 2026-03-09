@@ -1,11 +1,12 @@
 package com.system.vetcare.service;
 
+import com.system.vetcare.domain.UserPrincipal;
 import com.system.vetcare.domain.User;
-import com.system.vetcare.payload.request.RegistrationRequest;
+import com.system.vetcare.payload.request.UserRegistrationRequest;
 
 public interface UserService {
     
-    User save(RegistrationRequest registerRequest);
+    UserPrincipal save(UserRegistrationRequest userRegistrationRequest);
 
     void updateLoginTimestamp(User user);
 

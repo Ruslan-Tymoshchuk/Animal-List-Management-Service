@@ -5,6 +5,7 @@ import static com.system.vetcare.service.constants.JwtClaimKeys.*;
 import java.util.List;
 import java.util.Set;
 import javax.crypto.SecretKey;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import com.system.vetcare.service.JwtClaimsExtractor;
@@ -46,11 +47,12 @@ public class JwtClaimsExtractorImpl implements JwtClaimsExtractor {
     }
     
     @Override
-    public Set<String> extractAuthorityNames(Claims claims) {
+    public Set<SimpleGrantedAuthority> extractAuthorities(Claims claims) {
         if (claims.get(AUTHORITIES_CLAIM) instanceof List<?> list) {
             return list
                      .stream()
                      .map(String::valueOf)
+                     .map(SimpleGrantedAuthority::new)
                      .collect(toUnmodifiableSet());
         } else {
             throw new JwtException("Invalid authorities claim: expected array");

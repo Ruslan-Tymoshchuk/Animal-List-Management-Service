@@ -6,13 +6,13 @@ import com.system.vetcare.domain.Manager;
 import com.system.vetcare.domain.Staff;
 import com.system.vetcare.domain.User;
 import com.system.vetcare.domain.enums.EAuthority;
-import com.system.vetcare.payload.response.UserProfileDetails;
+import com.system.vetcare.payload.response.PrincipalProfile;
 import com.system.vetcare.service.ManagerService;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class ManagerStrategyResolver implements UserProfileResolverStrategy {
+public class ManagerStrategyResolver implements PrincipalProfileResolverStrategy {
 
     private final ManagerService managerService;
 
@@ -22,9 +22,9 @@ public class ManagerStrategyResolver implements UserProfileResolverStrategy {
     }
 
     @Override
-    public UserProfileDetails resolveUserProfileDetails(Integer userId) {
+    public PrincipalProfile resolveUserProfileDetails(Integer userId) {
         Manager manager = managerService.findByUserId(userId);
-        return new UserProfileDetails(manager.getId(), getSupportedAuthority().name());
+        return new PrincipalProfile(manager.getId(), getSupportedAuthority().name());
     }
 
     @Override

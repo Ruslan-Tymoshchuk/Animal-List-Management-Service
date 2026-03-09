@@ -5,13 +5,13 @@ import org.springframework.stereotype.Service;
 import com.system.vetcare.domain.Owner;
 import com.system.vetcare.domain.User;
 import com.system.vetcare.domain.enums.EAuthority;
-import com.system.vetcare.payload.response.UserProfileDetails;
+import com.system.vetcare.payload.response.PrincipalProfile;
 import com.system.vetcare.service.OwnerService;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class OwnerStrategyResolver implements UserProfileResolverStrategy {
+public class OwnerStrategyResolver implements PrincipalProfileResolverStrategy {
 
     private final OwnerService ownerService;
 
@@ -21,9 +21,9 @@ public class OwnerStrategyResolver implements UserProfileResolverStrategy {
     }
 
     @Override
-    public UserProfileDetails resolveUserProfileDetails(Integer userId) {
+    public PrincipalProfile resolveUserProfileDetails(Integer userId) {
         Owner owner = ownerService.findByUserId(userId);
-        return new UserProfileDetails(owner.getId(), getSupportedAuthority().name());
+        return new PrincipalProfile(owner.getId(), getSupportedAuthority().name());
     }
 
     @Override
