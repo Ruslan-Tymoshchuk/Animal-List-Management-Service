@@ -45,9 +45,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final PrincipalProfileResolver principalProfileResolver;
     
     @Override
-    public AuthenticationResponse buildAuthenticationResponse(UserPrincipal principalDetails) {
-        List<PrincipalProfile> profiles = principalProfileResolver.resolvePrincipalProfiles(principalDetails);          
-        return new AuthenticationResponse(principalDetails.email(), principalDetails.lastLogin().format(TIME_FORMATTER), profiles);
+    public AuthenticationResponse buildAuthenticationResponse(UserPrincipal userPrincipal) {
+        List<PrincipalProfile> profiles = principalProfileResolver.resolvePrincipalProfiles(userPrincipal);          
+        return new AuthenticationResponse(userPrincipal.email(), userPrincipal.lastLogin().format(TIME_FORMATTER), profiles);
     }
     
     @Override

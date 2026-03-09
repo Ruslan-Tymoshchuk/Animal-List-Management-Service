@@ -5,6 +5,7 @@ import static com.system.vetcare.service.constants.JwtClaimKeys.*;
 import java.util.List;
 import java.util.Set;
 import javax.crypto.SecretKey;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -47,7 +48,7 @@ public class JwtClaimsExtractorImpl implements JwtClaimsExtractor {
     }
     
     @Override
-    public Set<SimpleGrantedAuthority> extractAuthorities(Claims claims) {
+    public Set<GrantedAuthority> extractAuthorities(Claims claims) {
         if (claims.get(AUTHORITIES_CLAIM) instanceof List<?> list) {
             return list
                      .stream()
