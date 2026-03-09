@@ -14,13 +14,14 @@ import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import com.system.vetcare.domain.UserPrincipal;
 import com.system.vetcare.domain.User;
 import com.system.vetcare.payload.request.AuthenticationRequest;
 import com.system.vetcare.payload.response.AuthenticationResponse;
-import com.system.vetcare.payload.response.UserProfileDetails;
+import com.system.vetcare.payload.response.PrincipalProfile;
 import com.system.vetcare.service.AuthenticationService;
 import com.system.vetcare.service.UserService;
-import com.system.vetcare.service.strategy.UserProfileResolver;
+import com.system.vetcare.service.strategy.PrincipalProfileResolver;
 import lombok.RequiredArgsConstructor;
 
 @Component
@@ -41,20 +42,20 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final UserService userService;
     private final Map<String, Integer> failedAttempts = new HashMap<>();
     private final Map<String, LocalDateTime> accountlockTime = new HashMap<>();   
-    private final UserProfileResolver authorityResolver;
+    private final PrincipalProfileResolver principalProfileResolver;
     
     @Override
-    public AuthenticationResponse buildAuthenticationResponse(User user) {
-        List<UserProfileDetails> userAuthorities = authorityResolver.resolveUserProfiles(user);          
-        return new AuthenticationResponse(user.getEmail(), user.getLastLogin().format(TIME_FORMATTER), userAuthorities);
+    public AuthenticationResponse buildAuthenticationResponse(UserPrincipal userPrincipal) {
+        List<PrincipalProfile> profiles = principalProfileResolver.resolvePrincipalProfiles(userPrincipal);          
+        return new AuthenticationResponse(userPrincipal.email(), userPrincipal.lastLogin().format(TIME_FORMATTER), profiles);
     }
     
     @Override
-    public User resolvePrincipal(AuthenticationRequest credential) {
+    public UserPrincipal authenticate(AuthenticationRequest credential) {
         User principal = userService.loadUserByUsername(credential.email());
         if (principal.isAccountNonLocked()) {
             validateCredentials(credential, principal);
-            return principal;
+            return new UserPrincipal(principal);
         } else {
             throw new LockedException(ACCOUNT_HAS_BEEN_LOCKED);
         }

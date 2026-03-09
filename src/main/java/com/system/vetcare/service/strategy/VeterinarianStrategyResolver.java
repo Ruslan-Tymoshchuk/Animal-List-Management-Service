@@ -6,13 +6,13 @@ import com.system.vetcare.domain.Staff;
 import com.system.vetcare.domain.User;
 import com.system.vetcare.domain.Veterinarian;
 import com.system.vetcare.domain.enums.EAuthority;
-import com.system.vetcare.payload.response.UserProfileDetails;
+import com.system.vetcare.payload.response.PrincipalProfile;
 import com.system.vetcare.service.VeterinarianService;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class VeterinarianStrategyResolver implements UserProfileResolverStrategy {
+public class VeterinarianStrategyResolver implements PrincipalProfileResolverStrategy {
 
     private final VeterinarianService veterinarianService;
 
@@ -22,9 +22,9 @@ public class VeterinarianStrategyResolver implements UserProfileResolverStrategy
     }
 
     @Override
-    public UserProfileDetails resolveUserProfileDetails(Integer userId) {
+    public PrincipalProfile resolveUserProfileDetails(Integer userId) {
         Veterinarian veterinarian = veterinarianService.findByUserId(userId);
-        return new UserProfileDetails(veterinarian.getId(), getSupportedAuthority().name());
+        return new PrincipalProfile(veterinarian.getId(), getSupportedAuthority().name());
     }
 
     @Override

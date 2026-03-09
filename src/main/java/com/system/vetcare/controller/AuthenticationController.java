@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.system.vetcare.domain.UserPrincipal;
 import com.system.vetcare.domain.JwtAuthenticationToken;
-import com.system.vetcare.domain.User;
 import com.system.vetcare.payload.request.AuthenticationRequest;
-import com.system.vetcare.payload.request.RegistrationRequest;
+import com.system.vetcare.payload.request.UserRegistrationRequest;
 import com.system.vetcare.payload.request.UserEmailValidationRequest;
 import com.system.vetcare.payload.response.AuthenticationResponse;
 import com.system.vetcare.payload.response.UserEmailValidationResponse;
@@ -38,11 +38,11 @@ public class AuthenticationController {
 
     @PostMapping(USER_REGISTRATION)
     public ResponseEntity<AuthenticationResponse> performRegistration(
-            @RequestBody RegistrationRequest registrationRequest) {
-        final User user = userService.save(registrationRequest);
-        final JwtAuthenticationToken authenticationToken = jwtAuthenticationService.issueAuthenticationToken(user);
+            @RequestBody UserRegistrationRequest userRegistrationRequest) {
+        final UserPrincipal userPrincipal = userService.save(userRegistrationRequest);
+        final JwtAuthenticationToken authenticationToken = jwtAuthenticationService.issueAuthenticationToken(userPrincipal);
         final HttpHeaders headers = jwtCookiesService.issueJwtCookies(authenticationToken);
-        final AuthenticationResponse authenticationResponse = authenticationService.buildAuthenticationResponse(user);
+        final AuthenticationResponse authenticationResponse = authenticationService.buildAuthenticationResponse(userPrincipal);
         return ResponseEntity
                 .status(CREATED)
                 .headers(headers)
@@ -51,10 +51,10 @@ public class AuthenticationController {
 
     @PostMapping(USER_LOGIN)
     public ResponseEntity<AuthenticationResponse> performLogIn(@RequestBody AuthenticationRequest credential) {
-        final User user = authenticationService.resolvePrincipal(credential); 
-        final JwtAuthenticationToken authenticationToken = jwtAuthenticationService.issueAuthenticationToken(user);
+        final UserPrincipal userPrincipal = authenticationService.authenticate(credential); 
+        final JwtAuthenticationToken authenticationToken = jwtAuthenticationService.issueAuthenticationToken(userPrincipal);
         final HttpHeaders headers = jwtCookiesService.issueJwtCookies(authenticationToken);
-        final AuthenticationResponse authenticationResponse = authenticationService.buildAuthenticationResponse(user);
+        final AuthenticationResponse authenticationResponse = authenticationService.buildAuthenticationResponse(userPrincipal);
         return ResponseEntity
                 .ok()
                 .headers(headers)

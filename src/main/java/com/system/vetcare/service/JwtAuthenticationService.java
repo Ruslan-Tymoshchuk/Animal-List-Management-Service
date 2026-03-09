@@ -1,11 +1,11 @@
 package com.system.vetcare.service;
 
+import com.system.vetcare.domain.UserPrincipal;
 import com.system.vetcare.domain.JwtAuthenticationToken;
-import com.system.vetcare.domain.User;
 
 public interface JwtAuthenticationService {
 
-    JwtAuthenticationToken issueAuthenticationToken(User user);
+    JwtAuthenticationToken issueAuthenticationToken(UserPrincipal authenticatedPrincipal);
 
     JwtAuthenticationToken refreshAuthenticationToken(String jwtRefreshToken);
 

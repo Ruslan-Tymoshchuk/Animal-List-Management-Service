@@ -1,6 +1,6 @@
 package com.system.vetcare.payload.response;
 
-public record UserProfileDetails(
+public record PrincipalProfile(
         Integer profileId, 
         String accessLevel) {
 }

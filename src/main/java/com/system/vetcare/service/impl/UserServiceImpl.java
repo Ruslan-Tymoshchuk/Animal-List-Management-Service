@@ -6,12 +6,14 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.system.vetcare.domain.UserPrincipal;
 import com.system.vetcare.domain.User;
-import com.system.vetcare.payload.request.RegistrationRequest;
+import com.system.vetcare.payload.request.UserRegistrationRequest;
 import com.system.vetcare.repository.UserRepository;
 import com.system.vetcare.service.AuthorityService;
 import com.system.vetcare.service.UserService;
-import com.system.vetcare.service.strategy.UserProfileResolver;
+import com.system.vetcare.service.strategy.PrincipalProfileResolver;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -22,26 +24,26 @@ public class UserServiceImpl implements UserService {
     
     private final UserRepository userRepository;
     private final AuthorityService authorityService;
-    private final UserProfileResolver userProfileResolver;
+    private final PrincipalProfileResolver userProfileResolver;
     private final PasswordEncoder passwordEncoder;
    
     @Override
     @Transactional
-    public User save(RegistrationRequest registrationRequest) {   
+    public UserPrincipal save(UserRegistrationRequest userRegistrationRequest) {   
         User user = userRepository
                 .save(User
                         .builder()
-                        .firstName(registrationRequest.firstName())
-                        .lastName(registrationRequest.lastName())
-                        .email(registrationRequest.email())
-                        .password(passwordEncoder.encode(registrationRequest.password()))
-                        .legalCertificateId(registrationRequest.legalCertificateId())
-                        .authorities(authorityService.findAllById(registrationRequest.authorityIds()))
+                        .firstName(userRegistrationRequest.firstName())
+                        .lastName(userRegistrationRequest.lastName())
+                        .email(userRegistrationRequest.email())
+                        .password(passwordEncoder.encode(userRegistrationRequest.password()))
+                        .legalCertificateId(userRegistrationRequest.legalCertificateId())
+                        .authorities(authorityService.findAllById(userRegistrationRequest.authorityIds()))
                         .accountNonLocked(true)
                         .lastLogin(now())
                         .build()); 
         userProfileResolver.saveUserProfiles(user);
-        return user;
+        return new UserPrincipal(user);
     }
 
     @Override

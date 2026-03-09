@@ -1,6 +1,7 @@
 package com.system.vetcare.service;
 
 import java.util.Set;
+import org.springframework.security.core.GrantedAuthority;
 import io.jsonwebtoken.Claims;
 
 public interface JwtClaimsExtractor {
@@ -11,6 +12,6 @@ public interface JwtClaimsExtractor {
 
     String extractEmail(Claims claims);
 
-    Set<String> extractAuthorityNames(Claims claims);
+    Set<GrantedAuthority> extractAuthorities(Claims claims);
 
 }
